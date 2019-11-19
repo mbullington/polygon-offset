@@ -1,11 +1,24 @@
 var Edge     = require('./edge');
-var martinez = require('martinez-polygon-clipping');
+var polygonClipping = require('polygon-clipping');
 var utils    = require('./utils');
 
 
 var isArray     = utils.isArray;
 var equals      = utils.equals;
 var orientRings = utils.orientRings;
+
+// Helper functions wrap ring in a GeoJSON polygon
+// then unwraps it at the end.
+
+function coordsUnion(a, b) {
+  var union = polygonClipping.union([a], [b]);
+  return union[0];
+}
+
+function coordsDifference(a, b) {
+  var union = polygonClipping.difference([a], [b]);
+  return union[0];
+}
 
 
 /**
@@ -291,7 +304,7 @@ Offset.prototype.margin = function(dist) {
 
   var union = this.offsetLines(this._distance);
   //return union;
-  union = martinez.union(this.vertices, union);
+  union = coordsUnion(this.vertices, union);
   return orientRings(union);
 };
 
@@ -309,7 +322,7 @@ Offset.prototype.padding = function(dist) {
   }
 
   var union = this.offsetLines(this._distance);
-  var diff = martinez.diff(this.vertices, union);
+  var diff = coordsDifference(this.vertices, union);
   return orientRings(diff);
 };
 
@@ -338,7 +351,7 @@ Offset.prototype.offsetLines = function(dist) {
     for (var i = 0, len = this._edges.length; i < len; i++) {
       union = (i === 0) ?
         this.offsetContour(this.vertices[i], this._edges[i]):
-        martinez.union(union, this.offsetContour(this.vertices[i], this._edges[i]));
+        coordsUnion(union, this.offsetContour(this.vertices[i], this._edges[i]));
     }
   } else {
     union = (this.vertices.length === 1) ?
@@ -365,14 +378,14 @@ Offset.prototype.offsetContour = function(curve, edges) {
       );
       union = (i === 0) ?
                 [this.ensureLastPoint(segment)] :
-                martinez.union(union, this.ensureLastPoint(segment));
+                coordsUnion(union, this.ensureLastPoint(segment));
     }
   } else {
     for (i = 0, len = edges.length; i < len; i++) {
       union = (i === 0) ?
         this.offsetContour(curve[i], edges[i]) :
-        martinez.union(union, this.offsetContour(curve[i], edges[i]));
-    }
+        coordsUnion(union, this.offsetContour(curve[i], edges[i]));
+    } 
   }
   return union;
 };

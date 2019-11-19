@@ -2,8 +2,10 @@ var Offset = global.Offset = require('../src/offset');
 require('./leaflet_multipolygon');
 require('./polygon_control');
 var OffsetControl = require('./offset_control');
-var data = require('../test/fixtures/demo.json');
+var data = require('./faa_airspace.json');
 var project = require('geojson-project');
+
+var cleanCoords = require('@turf/clean-coords');
 
 var arcSegments = 5;
 
@@ -72,50 +74,21 @@ function run (margin) {
   layers.eachLayer(function(layer) {
     var gj = layer.toGeoJSON();
     console.log(gj, margin);
+
     var shape = project(gj, function(coord) {
       var pt = map.options.crs.latLngToPoint(L.latLng(coord.slice().reverse()), map.getZoom());
       return [pt.x, pt.y];
     });
 
-    var margined;
-    console.log(gj.geometry.type);
-    if (gj.geometry.type === 'LineString') {
-      if (margin < 0) return;
-      var res = new Offset(shape.geometry.coordinates)
-        .arcSegments(arcSegments)
-        .offsetLine(margin);
+    var res = new Offset(shape.geometry.coordinates).offset(margin);
+    var margined = cleanCoords['default']({
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: res
+      }
+    });
 
-      margined = {
-        type: 'Feature',
-        geometry: {
-          type: margin === 0 ? 'LineString' : 'Polygon',
-          coordinates: res
-        }
-      };
-    } else if (gj.geometry.type === 'Point') {
-      var res = new Offset(shape.geometry.coordinates)
-        .arcSegments(arcSegments)
-        .offset(margin);
-
-      margined = {
-        type: 'Feature',
-        geometry: {
-          type: 'Polygon',
-          coordinates: res
-        }
-      };
-    } else {
-      var res = new Offset(shape.geometry.coordinates).offset(margin);
-      margined = {
-        type: 'Feature',
-        geometry: {
-          type: 'Polygon',
-          coordinates: res
-        }
-      };
-    }
-
-    console.log('margined', margined);
     results.addData(project(margined, function(pt) {
       var ll = map.options.crs.pointToLatLng(L.point(pt.slice()), map.getZoom());
       return [ll.lng, ll.lat];

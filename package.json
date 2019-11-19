@@ -14,6 +14,7 @@
   "author": "Alexander Milevski <info@w8r.name>",
   "license": "MIT",
   "devDependencies": {
+    "@turf/clean-coords": "^6.0.1",
     "browserify": "^13.1.1",
     "eslint": "^3.8.1",
     "geojson-project": "^1.0.1",
@@ -38,6 +39,6 @@
     "url": "https://github.com/w8r/polygon-offset.git"
   },
   "dependencies": {
-    "martinez-polygon-clipping": "^0.1.5"
+    "polygon-clipping": "^0.14.3"
   }
 }
