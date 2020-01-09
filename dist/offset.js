@@ -3153,7 +3153,7 @@ module.exports.orientRings = function orientRings(coordinates, depth, isHole) {
     if ((!isHole && area > 0) || (isHole && area < 0)) {
       ring.reverse();
     }
-  } else {
+  } else if (isNonEmptyArray(coordinates)) {
     for (i = 0, len = coordinates.length; i < len; i++) {
       orientRings(coordinates[i], depth + 1, i > 0);
     }
