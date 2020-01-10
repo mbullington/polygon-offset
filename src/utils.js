@@ -2,17 +2,8 @@
  * @param  {*} arr
  * @return {Boolean}
  */
-var isArray = module.exports.isArray = Array.isArray || function (arr) {
-  return Object.prototype.toString.call(arr) === '[object Array]';
-};
-
-
-/**
- * @param  {*} arr
- * @return {Boolean}
- */
 var isNonEmptyArray = module.exports.isNonEmptyArray = function (arr) {
-  return isArray(arr) && arr.length;
+  return Array.isArray(arr) && arr.length;
 };
 
 

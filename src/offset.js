@@ -2,24 +2,15 @@ var Edge     = require('./edge');
 var polygonClipping = require('polygon-clipping');
 var utils    = require('./utils');
 
-
-var isArray     = utils.isArray;
 var equals      = utils.equals;
 var orientRings = utils.orientRings;
 
-// Helper functions wrap ring in a GeoJSON polygon
-// then unwraps it at the end.
-
+// Helper function wraps ring in a GeoJSON polygon
+// then unwraps it from MultiPolygon at the end.
 function coordsUnion(a, b) {
   var union = polygonClipping.union([a], [b]);
   return union[0];
 }
-
-function coordsDifference(a, b) {
-  var union = polygonClipping.difference([a], [b]);
-  return union[0];
-}
-
 
 /**
  * Offset builder
@@ -69,11 +60,11 @@ function Offset(vertices, arcSegments) {
  */
 Offset.prototype.data = function(vertices) {
   this._edges = [];
-  if (!isArray (vertices)) {
+  if (!Array.isArray (vertices)) {
     throw new Error('Offset requires at least one coodinate to work with');
   }
 
-  if (isArray(vertices) && typeof vertices[0] === 'number') {
+  if (Array.isArray(vertices) && typeof vertices[0] === 'number') {
     this.vertices = vertices;
   } else {
     this.vertices = orientRings(vertices);
@@ -91,7 +82,7 @@ Offset.prototype.data = function(vertices) {
  */
 Offset.prototype._processContour = function(contour, edges) {
   var i, len;
-  if (isArray(contour[0]) && typeof contour[0][0] === 'number') {
+  if (Array.isArray(contour[0]) && typeof contour[0][0] === 'number') {
     len = contour.length;
     if (equals(contour[0], contour[len - 1])) {
       len -= 1; // otherwise we get division by zero in normals
@@ -242,21 +233,6 @@ Offset.prototype.ensureLastPoint = function(vertices) {
   return vertices;
 };
 
-
-/**
- * Decides by the sign if it's a padding or a margin
- *
- * @param  {Number} dist
- * @return {Array.<Object>}
- */
-Offset.prototype.offset = function(dist) {
-  this.distance(dist);
-  return this._distance === 0 ? this.vertices :
-      (this._distance > 0 ? this.margin(this._distance) :
-        this.padding(-this._distance));
-};
-
-
 /**
  * @param  {Array.<Array.<Number>>} vertices
  * @param  {Array.<Number>}         pt1
@@ -322,7 +298,8 @@ Offset.prototype.padding = function(dist) {
   }
 
   var union = this.offsetLines(this._distance);
-  var diff = coordsDifference(this.vertices, union);
+
+  var diff = polygonClipping.difference([this.vertices], [union]);
   return orientRings(diff);
 };
 
@@ -347,7 +324,7 @@ Offset.prototype.offsetLines = function(dist) {
   if (dist < 0) throw new Error('Cannot apply negative margin to the line');
   var union;
   this.distance(dist);
-  if (isArray(this.vertices[0]) && typeof this.vertices[0][0] !== 'number') {
+  if (Array.isArray(this.vertices[0]) && typeof this.vertices[0][0] !== 'number') {
     for (var i = 0, len = this._edges.length; i < len; i++) {
       union = (i === 0) ?
         this.offsetContour(this.vertices[i], this._edges[i]):
@@ -370,7 +347,7 @@ Offset.prototype.offsetLines = function(dist) {
  */
 Offset.prototype.offsetContour = function(curve, edges) {
   var union, i, len;
-  if (isArray(curve[0]) && typeof curve[0][0] === 'number') {
+  if (Array.isArray(curve[0]) && typeof curve[0][0] === 'number') {
     // we have 1 less edge than vertices
     for (i = 0, len = curve.length - 1; i < len; i++) {
       var segment = this.ensureLastPoint(
