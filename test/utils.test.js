@@ -1,5 +1,5 @@
-var tap = require('tap');
-var Utils = require('../src/utils');
+import tap from 'tap';
+import * as Utils from '../src/utils.esm.js';
 
 tap.test('orientRings', function(t) {
 

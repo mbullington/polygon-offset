@@ -105,5 +105,4 @@ Edge.prototype.inverse = function () {
   return new Edge(this.next, this.current);
 };
 
-
-module.exports = Edge;
+export default Edge;

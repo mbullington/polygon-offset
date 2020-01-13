@@ -1,9 +1,7 @@
-var Edge     = require('./edge');
-var polygonClipping = require('polygon-clipping');
-var utils    = require('./utils');
+import polygonClipping from 'polygon-clipping';
 
-var equals      = utils.equals;
-var orientRings = utils.orientRings;
+import Edge from './Edge.esm.js';
+import { equals, orientRings } from './utils.esm.js';
 
 // Helper function wraps ring in a GeoJSON polygon
 // then unwraps it from MultiPolygon at the end.
@@ -396,4 +394,4 @@ Offset.prototype.offsetPoint = function(distance) {
 
 Offset.orientRings = orientRings;
 
-module.exports = Offset;
+export default Offset;

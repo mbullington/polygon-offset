@@ -1,6 +1,6 @@
-var tap = require('tap');
-var Offset = require('../src/offset');
-var Edge = require('../src/edge');
+import tap from 'tap';
+import Offset from '../src/offset.esm.js';
+import Edge from '../src/Edge.esm.js';
 
 function prec(arr, precision) {
   if (typeof arr[0] === 'number') {
@@ -40,17 +40,17 @@ tap.test('polygon.offset', function(t) {
 
 
   t.test('margin', function(t) {
-    t.strictSame(prec(new Offset(points).arcSegments(3).margin(5), 3), [[[[-5,0],[-5,100],[-4.33,101.16],[-4.33,102.5],[-3.17,103.17],[-2.5,104.33],[-1.16,104.33],[0,105],[100,105],[101.16,104.33],[102.5,104.33],[103.17,103.17],[104.33,102.5],[104.33,101.16],[105,100],[105,0],[104.33,-1.16],[104.33,-2.5],[103.17,-3.17],[102.5,-4.33],[101.16,-4.33],[100,-5],[0,-5],[-1.16,-4.33],[-2.5,-4.33],[-3.17,-3.17],[-4.33,-2.5],[-4.33,-1.16],[-5,0]]]]);
-    t.strictSame(new Offset(points).arcSegments(1).margin(5), [[[[-5,0],[-5,100],[0,100],[0,105],[100,105],[100,100],[105,100],[105,0],[100,0],[100,-5],[0,-5],[0,0],[-5,0]]]], 'normal');
-    t.strictSame(new Offset(points).arcSegments(0).margin(5), [[[[-5,0],[-5,100],[0,100],[0,105],[100,105],[100,100],[105,100],[105,0],[100,0],[100,-5],[0,-5],[0,0],[-5,0]]]], '0 additional segs');
+    t.strictSame(prec(new Offset(points).arcSegments(3).margin(5), 3), [[[-5,0],[-5,100],[-4.33,101.16],[-4.33,102.5],[-3.17,103.17],[-2.5,104.33],[-1.16,104.33],[0,105],[100,105],[101.16,104.33],[102.5,104.33],[103.17,103.17],[104.33,102.5],[104.33,101.16],[105,100],[105,0],[104.33,-1.16],[104.33,-2.5],[103.17,-3.17],[102.5,-4.33],[101.16,-4.33],[100,-5],[0,-5],[-1.16,-4.33],[-2.5,-4.33],[-3.17,-3.17],[-4.33,-2.5],[-4.33,-1.16],[-5,0]]]);
+    t.strictSame(new Offset(points).arcSegments(1).margin(5), [[[-5,0],[-5,100],[0,100],[0,105],[100,105],[100,100],[105,100],[105,0],[100,0],[100,-5],[0,-5],[0,0],[-5,0]]], 'normal');
+    t.strictSame(new Offset(points).arcSegments(0).margin(5), [[[-5,0],[-5,100],[0,100],[0,105],[100,105],[100,100],[105,100],[105,0],[100,0],[100,-5],[0,-5],[0,0],[-5,0]]], '0 additional segs');
     t.strictSame(new Offset(points).margin(0), points, 'zero');
     t.end();
   });
 
 
   t.test('padding', function(t) {
-    t.strictSame(new Offset(points).arcSegments(5).padding(10), [[[10,10],[10,90],[90,90],[90,10],[10,10]]]);
-    t.strictSame(new Offset(points).padding(5), [[[5,5],[5,95],[95,95],[95,5],[5,5]]], 'normal');
+    t.strictSame(new Offset(points).arcSegments(5).padding(10), [[[[10,10],[10,90],[90,90],[90,10],[10,10]]]]);
+    t.strictSame(new Offset(points).padding(5), [[[[5,5],[5,95],[95,95],[95,5],[5,5]]]], 'normal');
     t.strictSame(new Offset(points).padding(0), points, 'zero');
     t.end();
   });
